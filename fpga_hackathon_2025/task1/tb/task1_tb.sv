@@ -1,0 +1,132 @@
+// Task 1: Maximum Finder Testbench
+// Author: Olaoluwa Raji
+// Team:   team_fsm
+
+`timescale 1ns / 1ps
+
+module task1_tb();
+   // Constants
+   localparam int TASK_INPUT_WIDTH  = 16;
+   localparam int TASK_OUTPUT_WIDTH = 16;
+   localparam int CLK_PERIOD = 10;  
+   localparam int TESTCASES  = 5000; // Same as Python script
+   
+   // Signals: UUT
+   logic                                i_clk   = 1'b0;
+   logic                                i_rst   = 1'b0;
+   logic                                i_valid = 1'b0;
+   logic                                i_first = 1'b0;
+   logic                                i_last  = 1'b0;
+   logic signed [TASK_INPUT_WIDTH-1:0]  i_data  = {TASK_INPUT_WIDTH{1'b0}};
+   logic                                o_valid;
+   logic                                o_last;
+   logic signed [TASK_OUTPUT_WIDTH-1:0] o_data;
+   
+   // Signals: Simulation
+   logic signed [TASK_INPUT_WIDTH-1:0] data [0:TESTCASES-1]; 
+   logic signed [TASK_INPUT_WIDTH-1:0] expected = {TASK_INPUT_WIDTH{1'b0}};
+   
+   initial begin: clock_gen
+      forever begin
+         #(CLK_PERIOD / 2);
+         i_clk <= ~i_clk;
+      end   
+   end
+   
+   initial begin: reset_gen
+      repeat(5) @(posedge i_clk);
+      i_rst <= 1'b1; // Assert reset input
+      repeat(5) @(posedge i_clk);
+      i_rst <= 1'b0; // De-assert reset input
+   end
+   
+   initial begin: stimuli
+      int fd_bin;
+      int rc_bin;
+      int eof_bin;
+      
+      int fd_exp;
+      int rc_exp;
+      int eof_exp; 
+      
+      int index;
+      // Read test vectors (for binary data and expected value).
+      fd_bin = $fopen("./tests.txt","r");
+      if(fd_bin == 0) $fatal(1,"%0t | Failed to open tests.txt",$time);
+      while(1) begin
+         eof_bin = $feof(fd_bin);
+         if(eof_bin) begin
+            $display("%0t | Reached end of tests.txt",$time);
+            break;
+         end
+         rc_bin = $fscanf(fd_bin, "%0d", data[index]);
+         index = index + 1;
+      end      
+      
+      fd_exp = $fopen("./max.txt","r");
+      if(fd_exp == 0) $fatal(1,"%0t | Failed to open max.txt",$time);
+      while(1) begin
+         eof_exp = $feof(fd_exp);
+         if(eof_exp) begin
+            $display("%0t | Reached end of max.txt",$time);
+            break;
+         end
+         rc_exp = $fscanf(fd_exp, "%0d", expected);
+         $display("%0t | Expected value = %0d",$time,expected);
+      end
+      
+      wait(i_rst == 1'b1);
+      wait(i_rst == 1'b0);
+      
+      // Start input data streaming
+      i_valid <= 1'b1;
+      i_data  <= data[0];
+      i_first <= 1'b1;
+      @(posedge i_clk);
+      i_first <= 1'b0;
+      
+      for(int i = 1; i < TESTCASES; i++) begin
+         i_data <= data[i];
+         if(i == TESTCASES-1) i_last <= 1'b1;
+         @(posedge i_clk);
+      end
+      
+      // End of valid input data stream
+      i_valid <= 1'b0;
+      i_last  <= 1'b0;
+   end
+   
+   // UUT
+   task1 #(.TASK_INPUT_WIDTH  (TASK_INPUT_WIDTH),
+           .TASK_OUTPUT_WIDTH (TASK_OUTPUT_WIDTH)) uut
+          (.i_clk   (i_clk),
+           .i_rst   (i_rst),
+           .i_valid (i_valid),
+           .i_first (i_first),
+           .i_last  (i_last),
+           .i_data  (i_data),
+           .o_valid (o_valid),
+           .o_last  (o_last),
+           .o_data  (o_data));   
+   
+   initial begin: monitor
+      $timeformat(-9, 0, " ns"); 
+      wait(i_rst == 1'b1);
+      wait(i_rst == 1'b0);  
+      forever begin
+         @(negedge i_clk);
+         if(o_valid && o_last) begin
+            if(o_data == expected) begin
+               $display("%0t | [PASS] | Expected: %0d, Got: %0d",
+                        $time,expected,o_data);
+               $finish;
+            end
+            else begin
+               $fatal(1,"%0t | [FAIL] | Expected: %0d, Got: %0d",
+                      $time,expected,o_data);
+            end            
+         end
+      end
+   end
+   
+endmodule
