@@ -4,28 +4,27 @@
 
 `timescale 1ns / 1ps
 module task1
-   #(parameter int TASK_INPUT_WIDTH  = 16,
-     parameter int TASK_OUTPUT_WIDTH = 16)
-    (input  logic                                i_clk,
-     input  logic                                i_rst,
-     input  logic                                i_valid,
-     input  logic                                i_first,
-     input  logic                                i_last,
-     input  logic signed [TASK_INPUT_WIDTH-1:0]  i_data,
-     output logic                                o_valid,
-     output logic                                o_last,
-     output logic signed [TASK_OUTPUT_WIDTH-1:0] o_data);
+   #(parameter int DATA_WIDTH  = 16)
+    (input  logic                         i_clk,
+     input  logic                         i_rst,
+     input  logic                         i_valid,
+     input  logic                         i_first,
+     input  logic                         i_last,
+     input  logic signed [DATA_WIDTH-1:0] i_data,
+     output logic                         o_valid,
+     output logic                         o_last,
+     output logic signed [DATA_WIDTH-1:0] o_data);
   
   typedef enum int unsigned {IDLE, SAMPLE, OUTPUT} state_t;
   state_t state_reg;
   state_t state_next;
   
   logic is_larger;
-  logic signed [TASK_INPUT_WIDTH-1:0] largest_reg;
-  logic signed [TASK_INPUT_WIDTH-1:0] largest_next;
+  logic signed [DATA_WIDTH-1:0] largest_reg;
+  logic signed [DATA_WIDTH-1:0] largest_next;
   
   always_comb begin: datapath
-   o_data     = {TASK_OUTPUT_WIDTH{1'b0}};
+   o_data     = {DATA_WIDTH{1'b0}};
    o_valid    =    1'b0;
    o_last     =    1'b0;  
    state_next = state_reg;
@@ -56,7 +55,7 @@ module task1
   always @(posedge i_clk) begin: registers
    if(i_rst) begin
       state_reg   <= IDLE;
-      largest_reg <= {TASK_INPUT_WIDTH{1'b0}};
+      largest_reg <= {DATA_WIDTH{1'b0}};
    end
    else begin
       state_reg   <= state_next;

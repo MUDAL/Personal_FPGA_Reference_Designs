@@ -9,25 +9,24 @@
 
 module task1_tb();
    // Constants
-   localparam int TASK_INPUT_WIDTH  = 16;
-   localparam int TASK_OUTPUT_WIDTH = 16;
+   localparam int DATA_WIDTH  = 16;
    localparam int CLK_PERIOD = 10;  
    localparam int TESTCASES  = 5000; // Same as Python script
    
    // Signals: UUT
-   logic                                i_clk   = 1'b0;
-   logic                                i_rst   = 1'b0;
-   logic                                i_valid = 1'b0;
-   logic                                i_first = 1'b0;
-   logic                                i_last  = 1'b0;
-   logic signed [TASK_INPUT_WIDTH-1:0]  i_data  = {TASK_INPUT_WIDTH{1'b0}};
-   logic                                o_valid;
-   logic                                o_last;
-   logic signed [TASK_OUTPUT_WIDTH-1:0] o_data;
+   logic                         i_clk   = 1'b0;
+   logic                         i_rst   = 1'b0;
+   logic                         i_valid = 1'b0;
+   logic                         i_first = 1'b0;
+   logic                         i_last  = 1'b0;
+   logic signed [DATA_WIDTH-1:0] i_data  = {DATA_WIDTH{1'b0}};
+   logic                         o_valid;
+   logic                         o_last;
+   logic signed [DATA_WIDTH-1:0] o_data;
    
    // Signals: Simulation
-   logic signed [TASK_INPUT_WIDTH-1:0] data [0:TESTCASES-1]; 
-   logic signed [TASK_INPUT_WIDTH-1:0] expected = {TASK_INPUT_WIDTH{1'b0}};
+   logic signed [DATA_WIDTH-1:0] data [0:TESTCASES-1]; 
+   logic signed [DATA_WIDTH-1:0] expected = {DATA_WIDTH{1'b0}};
    
    initial begin: clock_gen
       forever begin
@@ -100,17 +99,16 @@ module task1_tb();
    end
    
    // UUT
-   task1 #(.TASK_INPUT_WIDTH  (TASK_INPUT_WIDTH),
-           .TASK_OUTPUT_WIDTH (TASK_OUTPUT_WIDTH)) uut
-          (.i_clk   (i_clk),
-           .i_rst   (i_rst),
-           .i_valid (i_valid),
-           .i_first (i_first),
-           .i_last  (i_last),
-           .i_data  (i_data),
-           .o_valid (o_valid),
-           .o_last  (o_last),
-           .o_data  (o_data));   
+   task1 #(.DATA_WIDTH (DATA_WIDTH)) uut
+          (.i_clk      (i_clk),
+           .i_rst      (i_rst),
+           .i_valid    (i_valid),
+           .i_first    (i_first),
+           .i_last     (i_last),
+           .i_data     (i_data),
+           .o_valid    (o_valid),
+           .o_last     (o_last),
+           .o_data     (o_data));   
    
    initial begin: monitor
       $timeformat(-9, 0, " ns"); 
