@@ -15,7 +15,7 @@ str_array = []
 
 """
     Brief: Create test vectors to be written to the files that'll
-    be referenced by the Verilog testbench.
+    be referenced by the SystemVerilog testbench.
     
     Parameter:
     - newline: If true, add a newline to the string version of the
