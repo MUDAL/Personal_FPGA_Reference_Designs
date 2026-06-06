@@ -4,23 +4,17 @@
 
 `timescale 1ns / 1ps
 module task1
-#(
-  parameter int TASK_INPUT_WIDTH  = 16,
-  parameter int TASK_OUTPUT_WIDTH = 16,
-  parameter int INPUT_STREAMS     = 1,
-  parameter int OUTPUT_STREAMS    = 1
-
-)(
-  input  logic                                i_clk,
-  input  logic                                i_rst,
-  input  logic                                i_valid,
-  input  logic                                i_first,
-  input  logic                                i_last,
-  input  logic signed [TASK_INPUT_WIDTH-1:0]  i_data,
-  output logic                                o_valid,
-  output logic                                o_last,
-  output logic signed [TASK_OUTPUT_WIDTH-1:0] o_data
-);
+   #(parameter int TASK_INPUT_WIDTH  = 16,
+     parameter int TASK_OUTPUT_WIDTH = 16)
+    (input  logic                                i_clk,
+     input  logic                                i_rst,
+     input  logic                                i_valid,
+     input  logic                                i_first,
+     input  logic                                i_last,
+     input  logic signed [TASK_INPUT_WIDTH-1:0]  i_data,
+     output logic                                o_valid,
+     output logic                                o_last,
+     output logic signed [TASK_OUTPUT_WIDTH-1:0] o_data);
   
   typedef enum int unsigned {IDLE, SAMPLE, OUTPUT} state_t;
   state_t state_reg;
@@ -31,22 +25,19 @@ module task1
   logic signed [TASK_INPUT_WIDTH-1:0] largest_next;
   
   always_comb begin: datapath
+   o_data     = {TASK_OUTPUT_WIDTH{1'b0}};
+   o_valid    =    1'b0;
+   o_last     =    1'b0;  
    state_next = state_reg;
-   is_larger  = 1'b0;
+   is_larger  =    1'b0;
    case(state_reg)
       IDLE: begin
-         o_data  = {TASK_OUTPUT_WIDTH{1'b0}};
-         o_valid =       1'b0;
-         o_last  =       1'b0;
          if(i_valid && i_first) begin
             state_next = SAMPLE;
             is_larger  = 1'b1;
          end
       end
       SAMPLE: begin
-         o_data  = {TASK_OUTPUT_WIDTH{1'b0}};
-         o_valid =       1'b0;
-         o_last  =       1'b0;
          if(i_valid && i_data > largest_reg) is_larger = 1'b1;
          if(i_last) state_next = OUTPUT;
       end

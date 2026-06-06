@@ -117,7 +117,7 @@ module task1_tb();
       wait(i_rst == 1'b1);
       wait(i_rst == 1'b0);  
       forever begin
-         @(negedge i_clk);
+         @(negedge i_clk); // Sample on negative edge to avoid delta cycle issues
          if(o_valid && o_last) begin
             if(o_data == expected) begin
                $display("%0t | [PASS] | Expected: %0d, Got: %0d",

@@ -9,6 +9,8 @@
 //  Created: 30 October 2015
 //  Tidied 12 December 2018
 //  Updated 16 November 2023 for new version of assignment.
+//
+//  Modified by Olaoluwa Raji: 23/11/2025
 //////////////////////////////////////////////////////////////////////////////////
 module calculator_top(
         input clk100,		 // 100 MHz clock from oscillator on board

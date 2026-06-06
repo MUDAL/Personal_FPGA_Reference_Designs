@@ -1,3 +1,5 @@
+# Author: Olaoluwa Raji
+# Date: 26/11/2025
 # Python script to generate random test vectors
 
 import string

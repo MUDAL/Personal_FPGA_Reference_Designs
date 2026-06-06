@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company: University College Dublin (UCD)
 // Engineer: Olaoluwa Raji
 // 
 // Create Date: 02.10.2025 11:09:28

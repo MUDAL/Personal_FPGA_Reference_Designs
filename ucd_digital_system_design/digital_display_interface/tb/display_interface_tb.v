@@ -1,3 +1,6 @@
+// Author: Olaoluwa Raji
+// Date: 18/10/2025
+
 `timescale 1ns / 1ps
 module display_interface_tb;
     
