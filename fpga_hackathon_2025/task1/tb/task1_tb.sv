@@ -9,7 +9,7 @@
 
 module task1_tb();
    // Constants
-   localparam int DATA_WIDTH  = 16;
+   localparam int DATA_WIDTH = 16;
    localparam int CLK_PERIOD = 10;  
    localparam int TESTCASES  = 5000; // Same as Python script
    
