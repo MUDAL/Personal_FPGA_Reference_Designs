@@ -189,7 +189,6 @@ module matrix_traverse
    assign o_data      = (o_valid_pipe[PIPE_REGS-1]) ? i_data : {DATA_LEN{1'b0}};
    assign o_done      =  done_reg;
    
-   
    always_ff @(posedge i_rst,posedge i_clk) begin: registers
       if(i_rst) begin
          q.state      <=      IDLE;
