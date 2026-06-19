@@ -1,2 +1,14 @@
-# Backup files (Verilog & SystemVerilog)  
+# Disposable build directories
+**/build/
+
+# Backup files
 *.bak
+
+# ModelSim Transcript
+transcript
+
+# ------------------------------------------------------------
+# Temporary files
+# ------------------------------------------------------------
+*.tmp
+*.log
