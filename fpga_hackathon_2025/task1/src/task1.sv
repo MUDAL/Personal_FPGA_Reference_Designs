@@ -1,6 +1,5 @@
 // Task 1: Maximum Finder Implementation
 // Author: Olaoluwa Raji
-// Team:   team_fsm
 
 `timescale 1ns / 1ps
 module task1
