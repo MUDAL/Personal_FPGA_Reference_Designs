@@ -98,7 +98,7 @@ module matrix_traverse
    assign i_rvalid = (state_reg != IDLE);
    
    always_comb begin: datapath
-      state_next =  state_reg;
+      state_next = state_reg;
       data_next  = data_reg;
       case(state_reg)
          IDLE: begin
