@@ -18,6 +18,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+// Matrix traverse
 
 // WORK IN PROGRESS !!!!!!!!!!!!!
 
@@ -62,20 +63,20 @@ module matrix_traverse
       DIAGONAL, 
       VERTICAL
    }state_t;
+   state_t state_reg;
+   state_t state_next;
    
    typedef struct {
-      state_t              state;
       logic [ADDR_LEN-1:0] row;
       logic [ADDR_LEN-1:0] col;
       logic                diag_down;
-   }reg_t;
+   }data_t;          // Datapath registers
+   data_t data_reg;  // Register output
+   data_t data_next; // Register input
    
-   reg_t q; // Register output (Q)
-   reg_t d; // Register input  (D)
-   
-   logic                 o_mem_last;   
+   logic                 o_mem_last; 
    logic                 done_reg;
-   logic                 done_next;
+   logic                 done_next; 
    // Signals: Reshaper
    logic                 i_rvalid;   
    logic                 o_rvalid;
@@ -89,98 +90,95 @@ module matrix_traverse
                        .i_rst      (i_rst),
                        .i_valid    (i_rvalid),
                        .i_row_max  (i_row_max),   
-                       .i_row      (q.row),
-                       .i_col      (q.col),
+                       .i_row      (data_reg.row),
+                       .i_col      (data_reg.col),
                        .o_mem_addr (o_mem_addr),
                        .o_valid    (o_rvalid)); 
    
-   assign i_rvalid = (q.state != IDLE);
+   assign i_rvalid = (state_reg != IDLE);
    
    always_comb begin: datapath
-      d.state      =  q.state;
-      d.row        =  q.row;
-      d.col        =  q.col;
-      d.diag_down  =  q.diag_down;
-      
-      case(q.state)
+      state_next =  state_reg;
+      data_next  = data_reg;
+      case(state_reg)
          IDLE: begin
             if(i_enable) begin
-               d.state = HORIZONTAL;
+               state_next = HORIZONTAL;
             end
          end
          
          HORIZONTAL: begin
-            if(q.row == {ADDR_LEN{1'b0}}) begin
-               d.state     = DIAGONAL;
-               d.col       = q.col + 1'b1;            
-               d.diag_down =     1'b1;
+            if(data_reg.row == {ADDR_LEN{1'b0}}) begin
+               state_next          =    DIAGONAL;
+               data_next.col       = data_reg.col + 1'b1;            
+               data_next.diag_down =     1'b1;
             end
-            if(q.row == i_row_max - 1) begin
-               if(q.col == i_col_max - 1) begin
-                  d.state      =      IDLE;
-                  d.row        = {ADDR_LEN{1'b0}};
-                  d.col        = {ADDR_LEN{1'b0}};
-                  d.diag_down  =      1'b0;                 
+            if(data_reg.row == i_row_max - 1) begin
+               if(data_reg.col == i_col_max - 1) begin
+                  state_next           =      IDLE;
+                  data_next.row        = {ADDR_LEN{1'b0}};
+                  data_next.col        = {ADDR_LEN{1'b0}};
+                  data_next.diag_down  =      1'b0;                 
                end
                else begin
-                  d.state      =  DIAGONAL;
-                  d.col        =  q.col + 1'b1;            
-                  d.diag_down  =      1'b0;               
+                  state_next           =     DIAGONAL;
+                  data_next.col        =  data_reg.col + 1'b1;            
+                  data_next.diag_down  =      1'b0;               
                end          
             end
          end
          
          DIAGONAL: begin
-            if(q.diag_down) begin
-               if(q.row == i_row_max - 2) begin
-                  d.state = HORIZONTAL;
-                  d.row   = q.row + 1'b1;
-                  d.col   = q.col - 1'b1;
+            if(data_reg.diag_down) begin
+               if(data_reg.row == i_row_max - 2) begin
+                  state_next      = HORIZONTAL;
+                  data_next.row   = data_reg.row + 1'b1;
+                  data_next.col   = data_reg.col - 1'b1;
                end
-               else if(q.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) begin
-                  d.state = VERTICAL;
-                  d.row   = q.row + 1'b1;
-                  d.col   = q.col - 1'b1;                
+               else if(data_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) begin
+                  state_next      = VERTICAL;
+                  data_next.row   = data_reg.row + 1'b1;
+                  data_next.col   = data_reg.col - 1'b1;                
                end
             end
             else begin
-               if(q.col == i_col_max - 2) begin
-                  d.state = VERTICAL;
-                  d.row   = q.row - 1'b1;
-                  d.col   = q.col + 1'b1;                  
+               if(data_reg.col == i_col_max - 2) begin
+                  state_next      = VERTICAL;
+                  data_next.row   = data_reg.row - 1'b1;
+                  data_next.col   = data_reg.col + 1'b1;                  
                end
-               else if(q.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) begin
-                  d.state = HORIZONTAL;
-                  d.row   = q.row - 1'b1;
-                  d.col   = q.col + 1'b1;
+               else if(data_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) begin
+                  state_next      = HORIZONTAL;
+                  data_next.row   = data_reg.row - 1'b1;
+                  data_next.col   = data_reg.col + 1'b1;
                end
             end
          end
          
          VERTICAL: begin
-            if(q.col == {ADDR_LEN{1'b0}}) begin
-               d.state     = DIAGONAL;
-               d.row       = q.row + 1'b1;            
-               d.diag_down =     1'b0;
+            if(data_reg.col == {ADDR_LEN{1'b0}}) begin
+               state_next          =    DIAGONAL;
+               data_next.row       = data_reg.row + 1'b1;            
+               data_next.diag_down =     1'b0;
             end
-            if(q.col == i_col_max - 1) begin
-               if(q.row == i_row_max - 1) begin
-                  d.state      =      IDLE;
-                  d.row        = {ADDR_LEN{1'b0}};
-                  d.col        = {ADDR_LEN{1'b0}};
-                  d.diag_down  =      1'b0;                 
+            if(data_reg.col == i_col_max - 1) begin
+               if(data_reg.row == i_row_max - 1) begin
+                  state_next           =      IDLE;
+                  data_next.row        = {ADDR_LEN{1'b0}};
+                  data_next.col        = {ADDR_LEN{1'b0}};
+                  data_next.diag_down  =      1'b0;                 
                end
                else begin
-                  d.state      =  DIAGONAL;
-                  d.row        =  q.row + 1'b1;            
-                  d.diag_down  =      1'b1;               
+                  state_next           =     DIAGONAL;
+                  data_next.row        =  data_reg.row + 1'b1;            
+                  data_next.diag_down  =      1'b1;               
                end
             end         
          end
       endcase
    end
    
-   assign o_mem_last  = (q.row == i_row_max - 1 && q.col == i_col_max - 1);
+   assign o_mem_last  = (data_reg.row == i_row_max - 1 && data_reg.col == i_col_max - 1);
    assign done_next   =  o_valid_pipe[PIPE_REGS-1] & o_last_pipe[PIPE_REGS-1];
    // Top-level outputs  
    assign o_read_addr =  o_mem_addr;
@@ -191,20 +189,16 @@ module matrix_traverse
    
    always_ff @(posedge i_rst,posedge i_clk) begin: registers
       if(i_rst) begin
-         q.state      <=      IDLE;
-         q.row        <= {ADDR_LEN{1'b0}};
-         q.col        <= {ADDR_LEN{1'b0}};
-         q.diag_down  <=      1'b0;
+         state_reg    <=      IDLE;
+         data_reg     <= '{default:0};
          done_reg     <=      1'b0;
          o_valid_pipe <= {PIPE_REGS{1'b0}};
          o_last_pipe  <= {PIPE_REGS{1'b0}};
       end
       else begin
-         q.state      <=  d.state;
-         q.row        <=  d.row;
-         q.col        <=  d.col;
-         q.diag_down  <=  d.diag_down;
-         done_reg     <=  done_next;
+         state_reg    <=    state_next;
+         data_reg     <=    data_next;
+         done_reg     <=    done_next;
          // Shift registers for pipelining
          o_valid_pipe[0]             <= o_rvalid;
          o_valid_pipe[PIPE_REGS-1:1] <= o_valid_pipe[PIPE_REGS-2:0];

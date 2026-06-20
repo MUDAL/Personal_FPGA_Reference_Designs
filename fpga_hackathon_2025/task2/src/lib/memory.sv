@@ -18,18 +18,25 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-// Task 2: Top-level design
+// Memory module
 
-module task2 
- ( input  logic       i_clk,
-   input  logic       i_rst,
-   input  logic       i_valid,
-   input  logic       i_first,
-   input  logic       i_last,
-   input  logic [7:0] i_data,
-   output logic [7:0] o_data,
-   output logic       o_valid,
-   output logic       o_last);
+module memory
+#( parameter int   DATA_LEN = 8,
+   parameter int   ADDR_LEN = 12 )
+ ( input    logic                i_clk,
+   input    logic                i_we,
+   input    logic [ADDR_LEN-1:0] w_addr,
+   input    logic [ADDR_LEN-1:0] r_addr,
+   input    logic [DATA_LEN-1:0] i_data,
+   output   logic [DATA_LEN-1:0] o_data);
    
+   logic [DATA_LEN-1:0] bram[0:2**ADDR_LEN-1];  
+   
+   always_ff @(posedge i_clk) begin
+      if(i_we) begin
+         bram[w_addr] <= i_data;
+      end
+      o_data <= bram[r_addr];
+   end   
    
 endmodule 
