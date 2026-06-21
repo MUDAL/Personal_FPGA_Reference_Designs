@@ -21,8 +21,8 @@
 // Task 2: Top-level design
 
 module task2 
-#( parameter int DATA_LEN = 8,
-   parameter int ADDR_LEN = 12)
+#( parameter int   DATA_LEN = 8,
+   parameter int   ADDR_LEN = 12)
  ( input    logic                i_clk,
    input    logic                i_rst,
    input    logic                i_valid,
