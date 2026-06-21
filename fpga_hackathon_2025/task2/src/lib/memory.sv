@@ -38,5 +38,4 @@ module memory
       end
       o_data <= bram[r_addr];
    end   
-   
 endmodule 

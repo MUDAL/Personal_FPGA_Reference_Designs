@@ -32,12 +32,12 @@ module memory_controller
    input    logic                i_last,
    input    logic [DATA_LEN-1:0] i_data,
    input    logic                i_traverse_done,
-   output   logic                o_write_done,  
    output   logic [ADDR_LEN-1:0] o_row_max,
    output   logic [ADDR_LEN-1:0] o_col_max,   
    output   logic [DATA_LEN-1:0] o_data, 
    output   logic [ADDR_LEN-1:0] o_write_addr,
-   output   logic                o_write_en);
+   output   logic                o_write_en,
+   output   logic                o_read_en);
    
    typedef enum int unsigned {IDLE = 0, HEADER_END, WRITE, READ} state_t;
    state_t state_reg;
@@ -85,7 +85,7 @@ module memory_controller
    assign o_write_addr =  o_reg.addr;  
    assign o_data       = (state_reg == WRITE) ? i_data : {DATA_LEN{1'b0}};
    assign o_write_en   = (state_reg == WRITE);
-   assign o_write_done = (state_reg == READ);
+   assign o_read_en    = (state_reg == READ);
    
    always_ff @(posedge i_rst,posedge i_clk) begin: registers
       if(i_rst) begin
