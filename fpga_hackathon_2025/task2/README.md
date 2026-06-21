@@ -3,5 +3,5 @@
 ## System Architecture  
 
 <p align="center">
-    <img width=60% src="../../images/task2_block_diagram.png">  
+    <img width=75% src="../../images/task2_block_diagram.png">  
 </p>  
