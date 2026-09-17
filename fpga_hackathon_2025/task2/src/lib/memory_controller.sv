@@ -59,12 +59,12 @@ module memory_controller
          IDLE: begin
             if(i_valid && i_first) begin
                state_next    = HEADER_END;
-               i_reg.max_row = i_data;
+               i_reg.max_col = i_data;
             end
          end
          HEADER_END: begin
             state_next    = WRITE;
-            i_reg.max_col = i_data;
+            i_reg.max_row = i_data;
          end
          WRITE: begin
             i_reg.addr = o_reg.addr + 1'b1;
