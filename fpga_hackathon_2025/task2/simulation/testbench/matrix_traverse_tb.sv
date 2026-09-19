@@ -35,13 +35,19 @@ module matrix_traverse_tb();
    logic [ADDR_LEN-1:0] i_row_max  = {ADDR_LEN{1'b0}};
    logic [ADDR_LEN-1:0] i_col_max  = {ADDR_LEN{1'b0}};
    logic                i_enable   =           1'b0;
-   logic [DATA_LEN-1:0] i_data     = {DATA_LEN{1'b0}};
+   logic [DATA_LEN-1:0] i_data_uut;
    logic [ADDR_LEN-1:0] o_read_addr;
    logic                o_done;
-   logic [DATA_LEN-1:0] o_data;   
+   logic [DATA_LEN-1:0] o_data_uut;   
    logic                o_valid;
    logic                o_last;
-   // Signals: Simulation
+   // Signals: Block RAM
+   logic                i_we        =           1'b0;
+   logic [ADDR_LEN-1:0] w_addr      = {ADDR_LEN{1'b0}};
+   logic [ADDR_LEN-1:0] r_addr;
+   logic [DATA_LEN-1:0] i_data_bram = {DATA_LEN{1'b0}};
+   logic [DATA_LEN-1:0] o_data_bram;   
+   // Signals: File I/O
    logic [DATA_LEN-1:0] data_in;
    logic [DATA_LEN-1:0] data_out;
    
@@ -59,7 +65,7 @@ module matrix_traverse_tb();
       i_rst <= 1'b0;
    end
 
-   initial begin: stimuli
+   initial begin: load_block_ram
       int fd;
       int i; i = 0;
       wait(i_rst == 1'b1);
@@ -74,32 +80,58 @@ module matrix_traverse_tb();
          if(i == 0)      i_col_max <= data_in;
          else if(i == 1) i_row_max <= data_in;
          else begin
-            i_enable <= 1'b1;           
-            i_data   <= data_in;
+            i_we        <= 1'b1;           
+            i_data_bram <= data_in;
+            w_addr      <= i - 2;         
          end
-         i = i + 1;         
+         i = i + 1;
          @(posedge i_clk);
       end
-      i_enable <= 1'b0;
+      i_we <= 1'b0;
       $fclose(fd);
    end   
    
-   matrix_traverse uut(.i_clk       (i_clk),
-                       .i_rst       (i_rst),
-                       .i_row_max   (i_row_max),
-                       .i_col_max   (i_col_max),
-                       .i_enable    (i_enable),
-                       .i_data      (i_data),
-                       .o_read_addr (o_read_addr),
-                       .o_done      (o_done),
-                       .o_data      (o_data),
-                       .o_valid     (o_valid),
-                       .o_last      (o_last));
+   initial begin: activate_matrix_traverse
+      wait(i_we == 1'b1);
+      wait(i_we == 1'b0);
+      i_enable <= 1'b1;
+      @(posedge i_clk);
+      i_enable <= 1'b0;
+   end
+
+   // Instantiate Block RAM
+   memory #(.DATA_LEN (DATA_LEN),
+            .ADDR_LEN (ADDR_LEN)) block_ram 
+           (.i_clk    (i_clk),
+            .i_we     (i_we),
+            .w_addr   (w_addr),
+            .r_addr   (r_addr),
+            .i_data   (i_data_bram),
+            .o_data   (o_data_bram));
+
+   assign i_data_uut = o_data_bram;
+   assign r_addr     = o_read_addr;
+
+   matrix_traverse #(.DATA_LEN       (DATA_LEN),
+                     .ADDR_LEN       (ADDR_LEN),
+                     .MEM_WR_LATENCY (MEM_WR_LATENCY),
+                     .MEM_RD_LATENCY (MEM_RD_LATENCY)) uut
+                    (.i_clk          (i_clk),
+                     .i_rst          (i_rst),
+                     .i_row_max      (i_row_max),
+                     .i_col_max      (i_col_max),
+                     .i_enable       (i_enable),
+                     .i_data         (i_data_uut),
+                     .o_read_addr    (o_read_addr),
+                     .o_done         (o_done),
+                     .o_data         (o_data_uut),
+                     .o_valid        (o_valid),
+                     .o_last         (o_last));
 
    initial begin: monitor
       int fd;
-      wait(i_rst == 1'b1);
-      wait(i_rst == 1'b0);
+      wait(i_enable == 1'b1);
+      wait(i_enable == 1'b0);
       // fd = $fopen("../scripts/matrix_traverse_outputs.txt", "r");
 
       // if(fd == 0) $fatal(1, "Failed to open matrix_traverse_outputs.txt");
@@ -113,7 +145,7 @@ module matrix_traverse_tb();
       forever begin
          @(negedge i_clk);
          $display("o_read_addr: %d | o_done: %d | o_data: %d | o_valid: %d | o_last: %d",
-                   o_read_addr, o_done, o_data, o_valid, o_last);
+                   o_read_addr, o_done, o_data_uut, o_valid, o_last);
          if(o_done) $finish;
       end    
    end
