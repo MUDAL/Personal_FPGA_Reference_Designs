@@ -1,4 +1,4 @@
-# Execute Python script to generate test vectors and status report files
+# Execute Python script to generate test vectors
 cd ../scripts
 if {$tcl_platform(os) eq "Windows NT"} {
     exec python matrix_traverse_tb.py
@@ -19,6 +19,7 @@ vmap work work
 
 # Compile SystemVerilog design and testbench files
 vlog -work work -sv -stats=none ../../src/lib/reshaper.sv
+vlog -work work -sv -stats=none ../../src/lib/memory.sv
 vlog -work work -sv -stats=none ../../src/lib/matrix_traverse.sv
 vlog -work work -sv -stats=none ../testbench/matrix_traverse_tb.sv
 
