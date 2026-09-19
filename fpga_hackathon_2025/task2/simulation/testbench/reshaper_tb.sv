@@ -26,13 +26,13 @@ module reshaper_tb();
    // Constants
    localparam int CLK_PERIOD = 10;  
    localparam int ADDR_LEN   = 12;
-   localparam int NUM_ROWS   =  8;
+   localparam int NUM_ROWS   =  4;
    localparam int NUM_COLS   =  8;
    // Signals: UUT
    logic                i_clk      =           1'b0;
    logic                i_rst      =           1'b0;
    logic                i_valid    =           1'b0;
-   logic [ADDR_LEN-1:0] i_row_max  = {ADDR_LEN{1'b0}};  
+   logic [ADDR_LEN-1:0] i_col_max  = {ADDR_LEN{1'b0}};  
    logic [ADDR_LEN-1:0] i_row      = {ADDR_LEN{1'b0}};
    logic [ADDR_LEN-1:0] i_col      = {ADDR_LEN{1'b0}};
    logic [ADDR_LEN-1:0] o_mem_addr;
@@ -59,7 +59,7 @@ module reshaper_tb();
              (.i_clk      (i_clk),
               .i_rst      (i_rst),
               .i_valid    (i_valid),
-              .i_row_max  (i_row_max),
+              .i_col_max  (i_col_max),
               .i_row      (i_row),
               .i_col      (i_col),
               .o_mem_addr (o_mem_addr),
@@ -70,12 +70,12 @@ module reshaper_tb();
       wait(i_rst == 1'b0);
       $display("%0t | Driving UUT input signals",$time);
       i_valid    <= 1'b1;
-      i_row_max  <= NUM_ROWS;
+      i_col_max  <= NUM_COLS;
       for(int row = 0; row < NUM_ROWS; row++) begin
          for(int col = 0; col < NUM_COLS; col++) begin
             i_row <= row;
             i_col <= col;
-            expected[NUM_ROWS*row+col] = NUM_ROWS*row+col;
+            expected[NUM_COLS*row+col] = NUM_COLS*row+col;
             @(posedge i_clk);
          end
       end
