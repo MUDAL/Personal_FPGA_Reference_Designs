@@ -27,7 +27,7 @@ module reshaper
  ( input     logic                i_clk,
    input     logic                i_rst,
    input     logic                i_valid,
-   input     logic [ADDR_LEN-1:0] i_row_max,   
+   input     logic [ADDR_LEN-1:0] i_col_max,   
    input     logic [ADDR_LEN-1:0] i_row,
    input     logic [ADDR_LEN-1:0] i_col,
    output    logic [ADDR_LEN-1:0] o_mem_addr,
@@ -49,7 +49,7 @@ module reshaper
    logic       o_vreg;   
    
    // Loading input registers
-   assign data_next.max   = (i_valid)   ?  i_row_max : data_reg.max;
+   assign data_next.max   = (i_valid)   ?  i_col_max : data_reg.max;
    assign data_next.row   = (i_valid)   ?  i_row     : data_reg.row;
    assign data_next.col1  = (i_valid)   ?  i_col     : data_reg.col1;
    // Pipeline - 1st stage 
