@@ -91,7 +91,7 @@ module matrix_traverse
                i_reg.col       = o_reg.col + 1'b1;            
                i_reg.diag_down =      1'b1;
             end
-            if(o_reg.row == i_row_max - 1) begin
+            else if(o_reg.row == i_row_max - 1) begin
                if(o_reg.col == i_col_max - 1) begin
                   state_next =     IDLE;
                   i_reg      = '{default:0};               
@@ -133,7 +133,7 @@ module matrix_traverse
                i_reg.row       = o_reg.row + 1'b1;            
                i_reg.diag_down =      1'b0;
             end
-            if(o_reg.col == i_col_max - 1) begin
+            else if(o_reg.col == i_col_max - 1) begin
                if(o_reg.row == i_row_max - 1) begin
                   state_next =     IDLE;
                   i_reg      = '{default:0};                  
