@@ -27,8 +27,7 @@ module matrix_traverse_tb();
    localparam  int  CLK_PERIOD     =  10;
    localparam  int  DATA_LEN       =   8;
    localparam  int  ADDR_LEN       =  12;
-   localparam  int  MEM_WR_LATENCY =   1;
-   localparam  int  MEM_RD_LATENCY =   1; 
+   localparam  int  LATENCY        =   3;
    // Signals: UUT
    logic                i_clk      =           1'b0;
    logic                i_rst      =           1'b0;
@@ -112,21 +111,20 @@ module matrix_traverse_tb();
    assign i_data_uut = o_data_bram;
    assign r_addr     = o_read_addr;
 
-   matrix_traverse #(.DATA_LEN       (DATA_LEN),
-                     .ADDR_LEN       (ADDR_LEN),
-                     .MEM_WR_LATENCY (MEM_WR_LATENCY),
-                     .MEM_RD_LATENCY (MEM_RD_LATENCY)) uut
-                    (.i_clk          (i_clk),
-                     .i_rst          (i_rst),
-                     .i_row_max      (i_row_max),
-                     .i_col_max      (i_col_max),
-                     .i_enable       (i_enable),
-                     .i_data         (i_data_uut),
-                     .o_read_addr    (o_read_addr),
-                     .o_done         (o_done),
-                     .o_data         (o_data_uut),
-                     .o_valid        (o_valid),
-                     .o_last         (o_last));
+   matrix_traverse #(.DATA_LEN     (DATA_LEN),
+                     .ADDR_LEN     (ADDR_LEN),
+                     .LATENCY      (LATENCY)) uut
+                    (.i_clk        (i_clk),
+                     .i_rst        (i_rst),
+                     .i_row_max    (i_row_max),
+                     .i_col_max    (i_col_max),
+                     .i_enable     (i_enable),
+                     .i_data       (i_data_uut),
+                     .o_read_addr  (o_read_addr),
+                     .o_done       (o_done),
+                     .o_data       (o_data_uut),
+                     .o_valid      (o_valid),
+                     .o_last       (o_last));
 
    initial begin: monitor
       int fd;
