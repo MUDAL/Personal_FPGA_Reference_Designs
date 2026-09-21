@@ -74,14 +74,15 @@ module matrix_traverse
                        .o_valid    (o_valid_reshaper)); 
    
    assign i_valid_reshaper = (state_reg != IDLE);
-   
+   assign last_element     =  o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
+
    always_comb begin: datapath
       state_next = state_reg;
       i_reg      = o_reg;
       case(state_reg)
          IDLE: begin
             i_reg = '{default:0};
-            if(i_enable && o_valid_reshaper == 1'b0) state_next = HORIZONTAL;
+            if(i_enable && !o_valid_reshaper) state_next = HORIZONTAL;
          end
          
          HORIZONTAL: begin
@@ -92,10 +93,8 @@ module matrix_traverse
             end
             if(o_reg.row == i_row_max - 1) begin
                if(o_reg.col == i_col_max - 1) begin
-                  state_next      =      IDLE;
-                  i_reg.row       = {ADDR_LEN{1'b0}};
-                  i_reg.col       = {ADDR_LEN{1'b0}};
-                  i_reg.diag_down =      1'b0;                 
+                  state_next =     IDLE;
+                  i_reg      = '{default:0};               
                end
                else begin
                   state_next      =     DIAGONAL;
@@ -110,8 +109,8 @@ module matrix_traverse
                i_reg.row = o_reg.row + 1'b1;
                i_reg.col = o_reg.col - 1'b1;                
                if(last_element) begin                                 
-                  state_next = IDLE;
-                  i_reg      = o_reg;
+                  state_next =  IDLE;
+                  i_reg      =  o_reg;
                end    
                else if(o_reg.row == i_row_max - 2)              state_next = HORIZONTAL;
                else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;
@@ -120,8 +119,8 @@ module matrix_traverse
                i_reg.row = o_reg.row - 1'b1;
                i_reg.col = o_reg.col + 1'b1;                 
                if(last_element) begin
-                  state_next = IDLE;
-                  i_reg      = o_reg;
+                  state_next =  IDLE;
+                  i_reg      =  o_reg;
                end               
                else if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;
                else if(o_reg.col == i_col_max - 2)              state_next = VERTICAL;
@@ -136,10 +135,8 @@ module matrix_traverse
             end
             if(o_reg.col == i_col_max - 1) begin
                if(o_reg.row == i_row_max - 1) begin
-                  state_next      =      IDLE;
-                  i_reg.row       = {ADDR_LEN{1'b0}};
-                  i_reg.col       = {ADDR_LEN{1'b0}};
-                  i_reg.diag_down =      1'b0;                 
+                  state_next =     IDLE;
+                  i_reg      = '{default:0};                  
                end
                else begin
                   state_next      =     DIAGONAL;
@@ -150,8 +147,6 @@ module matrix_traverse
          end
       endcase
    end
-   
-   assign last_element = o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
   
    // Top-level outputs  
    assign o_read_addr  =   o_mem_addr;
