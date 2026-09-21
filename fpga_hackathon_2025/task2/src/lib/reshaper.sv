@@ -19,7 +19,7 @@
 //  SOFTWARE.
 
 // Reshaper: Converts 2D memory addresses into 1D memory addresses.
-// Equation: 1D address = Number of rows * row index + column index.
+// Equation: 1D address = Number of columns * row index + column index.
 // LATENCY: 3 clock cycles.
 
 module reshaper 
