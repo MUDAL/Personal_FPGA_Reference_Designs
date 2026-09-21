@@ -18,33 +18,13 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-// Matrix traverse
-
-// WORK IN PROGRESS !!!!!!!!!!!!!
-
-// Important stuff [You might not get it perfectly on first try. Verify!!!!]:
-// 1. You need to know the latency of the reshaper in order to know when to
-// supply a valid address to the memory.
-// 2. You need to know the latency of the memory in order to know when to
-// transfer the valid incoming data from the memory.
-
-// 3. How do we return to the IDLE state when we are done? This transition is
-// possible in two cases. Case 1: Horizontal state, last column. 
-// ---------------------- Case 2: Vertical state, last row. [DONE]
-
-// 4. 'o_done' should be asserted a cycle after o_valid & o_last to signal the 
-// end of the matrix traverse. [DONE]
-
-// 5. Add logic for 'i_rvalid'. This signifies valid data into the reshaper IP.
-// Valid data goes into the IP when we're not in the IDLE state. [DONE]
-
-// You can register the 'o_valid' and 'o_data' later.
+// Matrix traverse.
+// Functional design completed on 21/09/2026.  
 
 module matrix_traverse 
-#( parameter  int   DATA_LEN       = 8,
-   parameter  int   ADDR_LEN       = 12,
-   parameter  int   MEM_WR_LATENCY = 1,
-   parameter  int   MEM_RD_LATENCY = 1 )
+#( parameter  int   DATA_LEN = 8,
+   parameter  int   ADDR_LEN = 12,
+   parameter  int   LATENCY  = 3 )
  ( input     logic                i_clk,
    input     logic                i_rst,
    input     logic [ADDR_LEN-1:0] i_row_max,
@@ -74,37 +54,34 @@ module matrix_traverse
    data_t o_reg; // Register output
    data_t i_reg; // Register input
    
-   logic                 o_mem_last; 
-   logic                 done_reg;
-   logic                 done_next; 
+   logic                last_element; 
+   logic                o_last_reg;
+   logic [LATENCY-1:0]  delay_reg;
+
    // Signals: Reshaper
-   logic                 i_rvalid;   
-   logic                 o_rvalid;
-   logic [ADDR_LEN-1:0]  o_mem_addr;
-   // Pipeline registers
-   localparam int PIPE_REGS = MEM_WR_LATENCY + MEM_RD_LATENCY;
-   logic [PIPE_REGS-1:0] o_valid_pipe;
-   logic [PIPE_REGS-1:0] o_last_pipe;
-   
+   logic                i_valid_reshaper;
+   logic                o_valid_reg;      
+   logic                o_valid_reshaper;
+   logic [ADDR_LEN-1:0] o_mem_addr;
+
    reshaper reshape_ip(.i_clk      (i_clk),
                        .i_rst      (i_rst),
-                       .i_valid    (i_rvalid),
+                       .i_valid    (i_valid_reshaper),
                        .i_col_max  (i_col_max),   
                        .i_row      (o_reg.row),
                        .i_col      (o_reg.col),
                        .o_mem_addr (o_mem_addr),
-                       .o_valid    (o_rvalid)); 
+                       .o_valid    (o_valid_reshaper)); 
    
-   assign i_rvalid = (state_reg != IDLE);
+   assign i_valid_reshaper = (state_reg != IDLE);
    
    always_comb begin: datapath
       state_next = state_reg;
       i_reg      = o_reg;
       case(state_reg)
          IDLE: begin
-            if(i_enable) begin
-               state_next = HORIZONTAL;
-            end
+            i_reg = '{default:0};
+            if(i_enable && o_valid_reshaper == 1'b0) state_next = HORIZONTAL;
          end
          
          HORIZONTAL: begin
@@ -131,15 +108,23 @@ module matrix_traverse
          DIAGONAL: begin
             if(o_reg.diag_down) begin
                i_reg.row = o_reg.row + 1'b1;
-               i_reg.col = o_reg.col - 1'b1; 
-               if(o_reg.row == i_row_max - 2)                   state_next = HORIZONTAL;
-               else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;            
+               i_reg.col = o_reg.col - 1'b1;                
+               if(last_element) begin                                 
+                  state_next = IDLE;
+                  i_reg      = o_reg;
+               end    
+               else if(o_reg.row == i_row_max - 2)              state_next = HORIZONTAL;
+               else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;
             end
             else begin
                i_reg.row = o_reg.row - 1'b1;
-               i_reg.col = o_reg.col + 1'b1;               
-               if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;
-               else if(o_reg.col == i_col_max - 2)         state_next = VERTICAL;
+               i_reg.col = o_reg.col + 1'b1;                 
+               if(last_element) begin
+                  state_next = IDLE;
+                  i_reg      = o_reg;
+               end               
+               else if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;
+               else if(o_reg.col == i_col_max - 2)              state_next = VERTICAL;
             end
          end
          
@@ -166,32 +151,31 @@ module matrix_traverse
       endcase
    end
    
-   assign o_mem_last  = (o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1);
-   assign done_next   =  o_valid_pipe[PIPE_REGS-1] & o_last_pipe[PIPE_REGS-1];
+   assign last_element = o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
+  
    // Top-level outputs  
-   assign o_read_addr =  o_mem_addr;
-   assign o_last      =  o_last_pipe[ PIPE_REGS-1];
-   assign o_valid     =  o_valid_pipe[PIPE_REGS-1];
-   assign o_data      = (o_valid_pipe[PIPE_REGS-1]) ? i_data : {DATA_LEN{1'b0}};
-   assign o_done      =  done_reg;
+   assign o_read_addr  =   o_mem_addr;
+   assign o_last       =   delay_reg[LATENCY-1];
+   assign o_valid      =   o_valid_reg;
+   assign o_data       =   i_data;
+   assign o_done       =   o_valid_reg & delay_reg[LATENCY-1];
    
    always_ff @(posedge i_rst,posedge i_clk) begin: registers
       if(i_rst) begin
-         state_reg    <=      IDLE;
-         o_reg        <=  '{default:0};
-         done_reg     <=      1'b0;
-         o_valid_pipe <= {PIPE_REGS{1'b0}};
-         o_last_pipe  <= {PIPE_REGS{1'b0}};
+         state_reg      <=     IDLE;
+         o_reg          <= '{default:0};
+         o_valid_reg    <=     1'b0;
+         o_last_reg     <=     1'b0;
+         delay_reg      <= {LATENCY{1'b0}};
       end
       else begin
-         state_reg    <=    state_next;
-         o_reg        <=    i_reg;
-         done_reg     <=    done_next;
-         // Shift registers for pipelining
-         o_valid_pipe[0]             <= o_rvalid;
-         o_valid_pipe[PIPE_REGS-1:1] <= o_valid_pipe[PIPE_REGS-2:0];
-         o_last_pipe[0]              <= o_mem_last;
-         o_last_pipe[PIPE_REGS-1:1]  <= o_last_pipe[PIPE_REGS-2:0];
+         state_reg      <=  state_next;
+         o_reg          <=  i_reg;
+         o_valid_reg    <=  o_valid_reshaper;
+         o_last_reg     <=  last_element;
+         // Delay register to account for the reshape IP's latency.
+         delay_reg[0]           <=  o_last_reg;
+         delay_reg[LATENCY-1:1] <=  delay_reg[LATENCY-2:0];
       end
    end   
 endmodule 
