@@ -80,7 +80,7 @@ module matrix_traverse
       i_reg      = o_reg;
       case(state_reg)
          IDLE: begin
-            if(i_enable && !o_valid_flatten) state_next = HORIZONTAL;
+            if(i_enable) state_next = HORIZONTAL;
          end
          
          HORIZONTAL: begin
