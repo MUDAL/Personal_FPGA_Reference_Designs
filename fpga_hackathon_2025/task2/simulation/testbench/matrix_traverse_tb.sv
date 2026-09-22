@@ -36,7 +36,6 @@ module matrix_traverse_tb();
    logic                i_enable   =           1'b0;
    logic [DATA_LEN-1:0] i_data_uut;
    logic [ADDR_LEN-1:0] o_read_addr;
-   logic                o_done;
    logic [DATA_LEN-1:0] o_data_uut;   
    logic                o_valid;
    logic                o_last;
@@ -64,7 +63,7 @@ module matrix_traverse_tb();
       i_rst <= 1'b0;
    end
 
-   initial begin: load_block_ram
+   initial begin: fill_block_ram
       int fd;
       int i; i = 0;
       wait(i_rst == 1'b1);
@@ -121,31 +120,48 @@ module matrix_traverse_tb();
                      .i_enable     (i_enable),
                      .i_data       (i_data_uut),
                      .o_read_addr  (o_read_addr),
-                     .o_done       (o_done),
                      .o_data       (o_data_uut),
                      .o_valid      (o_valid),
                      .o_last       (o_last));
 
    initial begin: monitor
-      int fd;
+      int return_code;
+      int fd_output; int fd_report;
+      int pass; int fail;
+      pass = 0; 
+      fail = 0;
+
       wait(i_enable == 1'b1);
       wait(i_enable == 1'b0);
-      // fd = $fopen("../scripts/matrix_traverse_outputs.txt", "r");
+      fd_output = $fopen("../scripts/matrix_traverse_outputs.txt", "r");
+      fd_report = $fopen("../scripts/matrix_traverse_report.txt",  "w");
 
-      // if(fd == 0) $fatal(1, "Failed to open matrix_traverse_outputs.txt");
-
-      // while($fscanf(fd, "%d", data_out) > 0) begin
-      //    $display("Data out: %d", data_out);          
-      //    @(posedge i_clk);
-      // end
-      // $fclose(fd);
+      if(fd_output == 0) $fatal(1, "Failed to open matrix_traverse_outputs.txt");
+      if(fd_report == 0) $fatal(1, "Failed to open matrix_traverse_report.txt");
 
       forever begin
          @(negedge i_clk);
-         $display("o_read_addr: %d | o_done: %d | o_data: %d | o_valid: %d | o_last: %d",
-                   o_read_addr, o_done, o_data_uut, o_valid, o_last);
-         if(o_done) $finish;
+         if(o_valid) begin
+            return_code = $fscanf(fd_output, "%d", data_out);
+            if(o_data_uut == data_out) pass = pass + 1;
+            else fail = fail + 1;
+            $display("EXPECTED: %2d | GOT: %2d", data_out, o_data_uut);
+            $fdisplay(fd_report, "EXPECTED: %2d | GOT: %2d", data_out, o_data_uut);
+
+            if(o_last) begin
+               $display("\n-----------------------------------------");
+               $display("TESTCASES: %0d | PASSED: %0d | FAILED: %0d", pass + fail, pass, fail);
+               $display("-----------------------------------------\n");
+
+               $fdisplay(fd_report, "\n-----------------------------------------");
+               $fdisplay(fd_report, "TESTCASES: %0d | PASSED: %0d | FAILED: %0d", pass + fail, pass, fail);
+               $fdisplay(fd_report, "-----------------------------------------\n");  
+                            
+               $fclose(fd_output);
+               $fclose(fd_report);
+               $finish;
+            end
+         end
       end    
    end
-  
 endmodule 

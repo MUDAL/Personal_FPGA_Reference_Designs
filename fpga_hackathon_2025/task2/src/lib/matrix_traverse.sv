@@ -32,7 +32,6 @@ module matrix_traverse
    input     logic                i_enable,
    input     logic [DATA_LEN-1:0] i_data,
    output    logic [ADDR_LEN-1:0] o_read_addr,
-   output    logic                o_done, 
    output    logic [DATA_LEN-1:0] o_data,   
    output    logic                o_valid,
    output    logic                o_last);
@@ -55,34 +54,33 @@ module matrix_traverse
    data_t i_reg; // Register input
    
    logic                last_element; 
-   logic                o_last_reg;
+   logic                last_reg;
    logic [LATENCY-1:0]  delay_reg;
 
-   // Signals: Reshaper
-   logic                i_valid_reshaper;
+   // Signals: Flatten IP
+   logic                i_valid_flatten;
    logic                o_valid_reg;      
-   logic                o_valid_reshaper;
+   logic                o_valid_flatten;
    logic [ADDR_LEN-1:0] o_mem_addr;
 
-   reshaper reshape_ip(.i_clk      (i_clk),
-                       .i_rst      (i_rst),
-                       .i_valid    (i_valid_reshaper),
-                       .i_col_max  (i_col_max),   
-                       .i_row      (o_reg.row),
-                       .i_col      (o_reg.col),
-                       .o_mem_addr (o_mem_addr),
-                       .o_valid    (o_valid_reshaper)); 
+   flatten flatten_ip(.i_clk      (i_clk),
+                      .i_rst      (i_rst),
+                      .i_valid    (i_valid_flatten),
+                      .i_col_max  (i_col_max),   
+                      .i_row      (o_reg.row),
+                      .i_col      (o_reg.col),
+                      .o_mem_addr (o_mem_addr),
+                      .o_valid    (o_valid_flatten)); 
    
-   assign i_valid_reshaper = (state_reg != IDLE);
-   assign last_element     =  o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
+   assign i_valid_flatten = (state_reg != IDLE);
+   assign last_element    =  o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
 
    always_comb begin: datapath
       state_next = state_reg;
       i_reg      = o_reg;
       case(state_reg)
          IDLE: begin
-            i_reg = '{default:0};
-            if(i_enable && !o_valid_reshaper) state_next = HORIZONTAL;
+            if(i_enable && !o_valid_flatten) state_next = HORIZONTAL;
          end
          
          HORIZONTAL: begin
@@ -110,7 +108,7 @@ module matrix_traverse
                i_reg.col = o_reg.col - 1'b1;                
                if(last_element) begin                                 
                   state_next =  IDLE;
-                  i_reg      =  o_reg;
+                  i_reg      = '{default:0};
                end    
                else if(o_reg.row == i_row_max - 2)              state_next = HORIZONTAL;
                else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;
@@ -120,7 +118,7 @@ module matrix_traverse
                i_reg.col = o_reg.col + 1'b1;                 
                if(last_element) begin
                   state_next =  IDLE;
-                  i_reg      =  o_reg;
+                  i_reg      = '{default:0};
                end               
                else if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;
                else if(o_reg.col == i_col_max - 2)              state_next = VERTICAL;
@@ -153,23 +151,22 @@ module matrix_traverse
    assign o_last       =   delay_reg[LATENCY-1];
    assign o_valid      =   o_valid_reg;
    assign o_data       =   i_data;
-   assign o_done       =   o_valid_reg & delay_reg[LATENCY-1];
    
    always_ff @(posedge i_rst,posedge i_clk) begin: registers
       if(i_rst) begin
-         state_reg      <=     IDLE;
-         o_reg          <= '{default:0};
-         o_valid_reg    <=     1'b0;
-         o_last_reg     <=     1'b0;
-         delay_reg      <= {LATENCY{1'b0}};
+         state_reg     <=     IDLE;
+         o_reg         <= '{default:0};
+         o_valid_reg   <=     1'b0;
+         last_reg      <=     1'b0;
+         delay_reg     <= {LATENCY{1'b0}};
       end
       else begin
-         state_reg      <=  state_next;
-         o_reg          <=  i_reg;
-         o_valid_reg    <=  o_valid_reshaper;
-         o_last_reg     <=  last_element;
-         // Delay register to account for the reshape IP's latency.
-         delay_reg[0]           <=  o_last_reg;
+         state_reg     <=  state_next;
+         o_reg         <=  i_reg;
+         o_valid_reg   <=  o_valid_flatten;
+         last_reg      <=  last_element;
+         // Delay register to account for the flatten IP's latency.
+         delay_reg[0]           <=  last_reg;
          delay_reg[LATENCY-1:1] <=  delay_reg[LATENCY-2:0];
       end
    end   
