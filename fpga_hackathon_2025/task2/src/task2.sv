@@ -78,10 +78,11 @@ module task2
     .i_col_max   (col_max),
     .i_enable    (read_en),
     .i_data      (o_mem_data),
-    .o_read_addr (read_addr),
-    .o_done      (traverse_done),  
+    .o_read_addr (read_addr), 
     .o_data      (o_data),   
     .o_valid     (o_valid),
-    .o_last      (o_last));
+    .o_last      (traverse_done));
+   
+   assign o_last = traverse_done;
    //////////////////////////////////////////////////////////////////
 endmodule 
