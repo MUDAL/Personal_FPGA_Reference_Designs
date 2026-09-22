@@ -18,7 +18,7 @@ vlib work
 vmap work work
 
 # Compile SystemVerilog design and testbench files
-vlog -work work -sv -stats=none ../../src/lib/reshaper.sv
+vlog -work work -sv -stats=none ../../src/lib/flatten.sv
 vlog -work work -sv -stats=none ../../src/lib/memory.sv
 vlog -work work -sv -stats=none ../../src/lib/matrix_traverse.sv
 vlog -work work -sv -stats=none ../testbench/matrix_traverse_tb.sv
