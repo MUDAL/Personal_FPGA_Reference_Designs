@@ -18,7 +18,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-// Memory controller module.
+// Memory controller module
 
 // WORK IN PROGRESS !!!!!!!
 
