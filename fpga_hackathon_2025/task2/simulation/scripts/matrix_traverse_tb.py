@@ -6,8 +6,8 @@
 import numpy as np
 from   enum  import Enum
 
-NUM_ROWS = 8
-NUM_COLS = 500
+NUM_ROWS = 4
+NUM_COLS = 8
 
 index_arr:   np.ndarray = np.arange(NUM_ROWS*NUM_COLS, dtype=np.uint32)
 index_arr2d: np.ndarray = index_arr.reshape((NUM_ROWS,NUM_COLS))
