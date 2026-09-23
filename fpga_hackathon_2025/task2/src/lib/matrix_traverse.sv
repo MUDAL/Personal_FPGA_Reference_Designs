@@ -77,11 +77,9 @@ module matrix_traverse
 
    always_comb begin: datapath
       state_next = state_reg;
-      i_reg      = o_reg;
+      i_reg      = o_reg; 
       case(state_reg)
-         IDLE: begin
-            if(i_enable) state_next = HORIZONTAL;
-         end
+         IDLE: if(i_enable) state_next = HORIZONTAL;
          
          HORIZONTAL: begin
             state_next = DIAGONAL;
@@ -100,7 +98,7 @@ module matrix_traverse
             end
          end
          
-         DIAGONAL: begin             
+         DIAGONAL: begin            
             if(o_reg.diag_down) begin
                i_reg.row = o_reg.row + 1'b1;
                i_reg.col = o_reg.col - 1'b1;
