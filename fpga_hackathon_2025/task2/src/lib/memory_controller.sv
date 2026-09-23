@@ -20,8 +20,6 @@
 
 // Memory controller module
 
-// WORK IN PROGRESS !!!!!!!
-
 module memory_controller
 #( parameter int   DATA_LEN = 8,
    parameter int   ADDR_LEN = 12 )
@@ -67,8 +65,8 @@ module memory_controller
             i_reg.max_row = i_data;
          end
          WRITE: begin
-            i_reg.addr = o_reg.addr + 1'b1;
             if(i_valid && i_last) state_next = READ;
+            else i_reg.addr = o_reg.addr + 1'b1;
          end
          READ: begin
             if(i_traverse_done) begin
@@ -83,7 +81,7 @@ module memory_controller
    assign o_row_max    =  o_reg.max_row;
    assign o_col_max    =  o_reg.max_col;
    assign o_write_addr =  o_reg.addr;  
-   assign o_data       = (state_reg == WRITE) ? i_data : {DATA_LEN{1'b0}};
+   assign o_data       =  i_data;
    assign o_write_en   = (state_reg == WRITE);
    assign o_read_en    = (state_reg == READ);
    
