@@ -103,25 +103,23 @@ module matrix_traverse
          end
          
          DIAGONAL: begin
-            if(o_reg.diag_down) begin
-               i_reg.row = o_reg.row + 1'b1;
-               i_reg.col = o_reg.col - 1'b1;                
-               if(last_element) begin                                 
-                  state_next =  IDLE;
-                  i_reg      = '{default:0};
-               end    
-               else if(o_reg.row == i_row_max - 2)              state_next = HORIZONTAL;
-               else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;
-            end
-            else begin
-               i_reg.row = o_reg.row - 1'b1;
-               i_reg.col = o_reg.col + 1'b1;                 
-               if(last_element) begin
-                  state_next =  IDLE;
-                  i_reg      = '{default:0};
-               end               
-               else if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;
-               else if(o_reg.col == i_col_max - 2)              state_next = VERTICAL;
+            if(last_element) begin                                 
+               state_next =     IDLE;
+               i_reg      = '{default:0};  
+            end 
+            else begin              
+               if(o_reg.diag_down) begin
+                  i_reg.row = o_reg.row + 1'b1;
+                  i_reg.col = o_reg.col - 1'b1;
+                  if(o_reg.row == i_row_max - 2)                   state_next = HORIZONTAL;
+                  else if(o_reg.col == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = VERTICAL;                 
+               end
+               else begin
+                  i_reg.row = o_reg.row - 1'b1;
+                  i_reg.col = o_reg.col + 1'b1;
+                  if(o_reg.col == i_col_max - 2)                   state_next = VERTICAL; 
+                  else if(o_reg.row == {{ADDR_LEN-1{1'b0}}, 1'b1}) state_next = HORIZONTAL;                             
+               end
             end
          end
          
