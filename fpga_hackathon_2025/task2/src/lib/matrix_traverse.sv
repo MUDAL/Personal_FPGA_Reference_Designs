@@ -18,8 +18,8 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-// Matrix traverse.
-// Functional design completed on 21/09/2026.  
+// Matrix traverse
+// Functional design completed on 23/09/2026
 
 module matrix_traverse 
 #( parameter  int   DATA_LEN = 8,
@@ -84,21 +84,19 @@ module matrix_traverse
          end
          
          HORIZONTAL: begin
-            if(o_reg.row == {ADDR_LEN{1'b0}}) begin
-               state_next      =    DIAGONAL;
-               i_reg.col       = o_reg.col + 1'b1;            
-               i_reg.diag_down =      1'b1;
-            end
+            state_next = DIAGONAL;
+            i_reg.col  = o_reg.col + 1'b1;
+            if(o_reg.row == {ADDR_LEN{1'b0}}) i_reg.diag_down = 1'b1;
             else if(o_reg.row == i_row_max - 1) begin
                if(o_reg.col == i_col_max - 1) begin
                   state_next =     IDLE;
                   i_reg      = '{default:0};               
                end
-               else begin
-                  state_next      =     DIAGONAL;
-                  i_reg.col       =  o_reg.col + 1'b1;            
-                  i_reg.diag_down =       1'b0;               
-               end          
+               else i_reg.diag_down = 1'b0;                  
+            end
+            else begin
+               state_next = state_reg;
+               i_reg      = o_reg;
             end
          end
          
@@ -118,21 +116,19 @@ module matrix_traverse
          end
          
          VERTICAL: begin
-            if(o_reg.col == {ADDR_LEN{1'b0}}) begin
-               state_next      =    DIAGONAL;
-               i_reg.row       = o_reg.row + 1'b1;            
-               i_reg.diag_down =      1'b0;
-            end
+            state_next = DIAGONAL;
+            i_reg.row  = o_reg.row + 1'b1; 
+            if(o_reg.col == {ADDR_LEN{1'b0}}) i_reg.diag_down = 1'b0;
             else if(o_reg.col == i_col_max - 1) begin
                if(o_reg.row == i_row_max - 1) begin
                   state_next =     IDLE;
                   i_reg      = '{default:0};                  
                end
-               else begin
-                  state_next      =     DIAGONAL;
-                  i_reg.row       =  o_reg.row + 1'b1;            
-                  i_reg.diag_down =       1'b1;               
-               end
+               else i_reg.diag_down = 1'b1;     
+            end
+            else begin
+               state_next = state_reg;
+               i_reg      = o_reg;
             end         
          end
       endcase

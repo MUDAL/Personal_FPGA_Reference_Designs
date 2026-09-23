@@ -25,7 +25,7 @@
 module matrix_traverse_tb();
    // Constants
    localparam  int  CLK_PERIOD     =  10;
-   localparam  int  DATA_LEN       =   8;
+   localparam  int  DATA_LEN       =  12;
    localparam  int  ADDR_LEN       =  12;
    localparam  int  LATENCY        =   3;
    // Signals: UUT
@@ -145,17 +145,17 @@ module matrix_traverse_tb();
             return_code = $fscanf(fd_output, "%d", data_out);
             if(o_data_uut == data_out) pass = pass + 1;
             else fail = fail + 1;
-            $display("EXPECTED: %2d | GOT: %2d", data_out, o_data_uut);
-            $fdisplay(fd_report, "EXPECTED: %2d | GOT: %2d", data_out, o_data_uut);
+            $display("EXPECTED: %6d | GOT: %6d", data_out, o_data_uut);
+            $fdisplay(fd_report, "EXPECTED: %6d | GOT: %6d", data_out, o_data_uut);
 
             if(o_last) begin
-               $display("\n-----------------------------------------");
-               $display("TESTCASES: %0d | PASSED: %0d | FAILED: %0d", pass + fail, pass, fail);
-               $display("-----------------------------------------\n");
+               $display("\n--------------------------------------------------");
+               $display("TESTCASES: %3d | PASSED: %3d | FAILED: %3d", pass + fail, pass, fail);
+               $display("--------------------------------------------------\n");
 
-               $fdisplay(fd_report, "\n-----------------------------------------");
-               $fdisplay(fd_report, "TESTCASES: %0d | PASSED: %0d | FAILED: %0d", pass + fail, pass, fail);
-               $fdisplay(fd_report, "-----------------------------------------\n");  
+               $fdisplay(fd_report, "\n--------------------------------------------------");
+               $fdisplay(fd_report, "TESTCASES: %3d | PASSED: %3d | FAILED: %3d", pass + fail, pass, fail);
+               $fdisplay(fd_report, "--------------------------------------------------\n");  
                             
                $fclose(fd_output);
                $fclose(fd_report);
