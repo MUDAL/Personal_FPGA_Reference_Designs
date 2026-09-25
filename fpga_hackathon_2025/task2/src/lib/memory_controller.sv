@@ -43,9 +43,9 @@ module memory_controller
    
    typedef struct
    {
-      logic  [ADDR_LEN-1:0] max_row;
-      logic  [ADDR_LEN-1:0] max_col;
-      logic  [ADDR_LEN-1:0] addr;
+      logic [ADDR_LEN-1:0] max_row;
+      logic [ADDR_LEN-1:0] max_col;
+      logic [ADDR_LEN-1:0] addr;
    }data_t;      // Datapath register
    data_t o_reg; // Register output
    data_t i_reg; // Register input
