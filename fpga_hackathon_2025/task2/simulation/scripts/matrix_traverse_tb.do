@@ -1,9 +1,9 @@
 # Execute Python script to generate test vectors
 cd ../scripts
 if {$tcl_platform(os) eq "Windows NT"} {
-    exec python matrix_traverse_tb.py
+    exec python matrix_data_gen.py
 } else {
-    exec python3 matrix_traverse_tb.py
+    exec python3 matrix_data_gen.py
 }
 
 # Ensure you're in the build directory before compiling sources and running simulation

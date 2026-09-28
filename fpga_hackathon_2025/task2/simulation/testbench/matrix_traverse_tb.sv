@@ -68,9 +68,9 @@ module matrix_traverse_tb();
       int i; i = 0;
       wait(i_rst == 1'b1);
       wait(i_rst == 1'b0);
-      fd = $fopen("../scripts/matrix_traverse_inputs.txt", "r"); 
+      fd = $fopen("../scripts/matrix_inputs.txt", "r"); 
       
-      if(fd == 0) $fatal(1, "Failed to open matrix_traverse_inputs.txt");
+      if(fd == 0) $fatal(1, "Failed to open matrix_inputs.txt");
       
       // Reference: https://chipverify.com/systemverilog/systemverilog-file-io
       // Detecting EOF with $fscanf() instead of $feof()
@@ -133,10 +133,10 @@ module matrix_traverse_tb();
 
       wait(i_enable == 1'b1);
       wait(i_enable == 1'b0);
-      fd_output = $fopen("../scripts/matrix_traverse_outputs.txt", "r");
-      fd_report = $fopen("../scripts/matrix_traverse_report.txt",  "w");
+      fd_output = $fopen("../scripts/matrix_outputs.txt", "r");
+      fd_report = $fopen("../scripts/matrix_traverse_report.txt", "w");
 
-      if(fd_output == 0) $fatal(1, "Failed to open matrix_traverse_outputs.txt");
+      if(fd_output == 0) $fatal(1, "Failed to open matrix_outputs.txt");
       if(fd_report == 0) $fatal(1, "Failed to open matrix_traverse_report.txt");
 
       forever begin
