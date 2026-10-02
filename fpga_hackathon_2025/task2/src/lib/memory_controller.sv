@@ -70,8 +70,8 @@ module memory_controller
          end
          READ: begin
             if(i_traverse_done) begin
-               state_next =      IDLE;
-               i_reg.addr = {ADDR_LEN{1'b0}};
+               state_next =     IDLE;
+               i_reg      = '{default:0};
             end
          end
       endcase

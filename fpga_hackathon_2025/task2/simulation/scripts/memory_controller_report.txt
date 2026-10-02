@@ -44,4 +44,4 @@ Time: 520 ns | o_row_max:  4 | o_col_max:  8 | o_data: 31 | o_write_addr: 31 | o
 Time: 530 ns | o_row_max:  4 | o_col_max:  8 | o_data: 31 | o_write_addr: 31 | o_write_en:  0 | o_read_en:  1
 Time: 540 ns | Traverse done !!!
 Time: 540 ns | o_row_max:  4 | o_col_max:  8 | o_data: 31 | o_write_addr: 31 | o_write_en:  0 | o_read_en:  1
-Time: 550 ns | o_row_max:  4 | o_col_max:  8 | o_data: 31 | o_write_addr:  0 | o_write_en:  0 | o_read_en:  0
+Time: 550 ns | o_row_max:  0 | o_col_max:  0 | o_data: 31 | o_write_addr:  0 | o_write_en:  0 | o_read_en:  0
