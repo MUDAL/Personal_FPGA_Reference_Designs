@@ -57,8 +57,38 @@ module memory_controller_tb();
       i_rst <= 1'b0;
    end
 
-   // TO-DO: Generate stimuli from the data extracted from matrix_inputs.txt file.
    initial begin: stimuli
+      int fd;
+      logic [DATA_LEN-1:0] data_in;
+      int num_cols; int num_rows;
+      int i;
+
+      data_in  = {DATA_LEN{1'b0}}; 
+      num_cols = 0; num_rows = 0; i = 0;
+
+      wait(i_rst == 1'b1);
+      wait(i_rst == 1'b0);
+      fd = $fopen("../scripts/matrix_inputs.txt", "r"); 
+      if(fd == 0) $fatal(1, "Failed to open matrix_inputs.txt");
+
+      while($fscanf(fd, "%d", data_in) > 0) begin
+         i_valid <= 1'b1;
+         i_first <= 1'b0;
+         if(i == 0) begin
+            num_cols = data_in;
+            i_first <= 1'b1;
+         end
+         else if(i == 1) num_rows = data_in;
+         else if(i == 2+num_cols*num_rows-1) i_last <= 1'b1;
+         i_data <= data_in;
+         i = i + 1;
+         @(posedge i_clk);         
+      end
+      $fclose(fd);
+      i_valid <= 1'b0;
+      i_last  <= 1'b0;
+      repeat(10) @(posedge i_clk);
+      i_traverse_done <= 1'b1;
    end
 
    memory_controller #(.DATA_LEN        (DATA_LEN),
@@ -78,6 +108,38 @@ module memory_controller_tb();
                        .o_read_en       (o_read_en));
 
    initial begin: monitor
-      $finish;
+      int fd;
+      bit prev_read_en;
+      bit prev_trav_done;
+
+      $timeformat(-9, 0, " ns");     
+      wait(i_rst == 1'b1);
+      wait(i_rst == 1'b0);
+
+      prev_trav_done = 1'b0;
+      prev_read_en   = 1'b0; 
+      fd = $fopen("../scripts/memory_controller_report.txt", "w"); 
+      if(fd == 0) $fatal(1, "Failed to open memory_controller_report.txt");
+
+      forever begin
+         @(negedge i_clk);
+         if(i_traverse_done && !prev_trav_done) begin
+            $display("Time: %0t | Traverse done !!!", $time); 
+            $fdisplay(fd, "Time: %0t | Traverse done !!!", $time);
+            prev_trav_done = 1'b1;            
+         end
+
+         $display("Time: %0t | o_row_max: %2d | o_col_max: %2d | o_data: %2d | o_write_addr: %2d | o_write_en: %2d | o_read_en: %2d",
+                  $time, o_row_max, o_col_max, o_data, o_write_addr, o_write_en, o_read_en);
+
+         $fdisplay(fd, "Time: %0t | o_row_max: %2d | o_col_max: %2d | o_data: %2d | o_write_addr: %2d | o_write_en: %2d | o_read_en: %2d",
+                   $time, o_row_max, o_col_max, o_data, o_write_addr, o_write_en, o_read_en);
+         
+         if(o_read_en && !prev_read_en) prev_read_en = 1'b1;
+         if(!o_read_en && prev_read_en) begin 
+            $fclose(fd);
+            $finish;
+         end
+      end
    end
 endmodule 
