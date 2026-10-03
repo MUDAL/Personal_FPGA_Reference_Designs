@@ -1,4 +1,4 @@
-// Task 1: Maximum Finder Testbench
+// Task 1:   Maximum Finder Testbench
 // Author:   Olaoluwa Raji
 // Modified: 25/9/2026
 // Note:     This self-checking testbench reads test vectors from text files
@@ -14,11 +14,11 @@ module task1_tb();
    localparam int TESTCASES  = 5000; // Same as in Python script
    
    // Signals: UUT
-   logic                         i_clk   = 1'b0;
-   logic                         i_rst   = 1'b0;
-   logic                         i_valid = 1'b0;
-   logic                         i_first = 1'b0;
-   logic                         i_last  = 1'b0;
+   logic                         i_clk   =       1'b0;
+   logic                         i_rst   =       1'b0;
+   logic                         i_valid =       1'b0;
+   logic                         i_first =       1'b0;
+   logic                         i_last  =       1'b0;
    logic signed [DATA_WIDTH-1:0] i_data  = {DATA_WIDTH{1'b0}};
    logic                         o_valid;
    logic                         o_last;

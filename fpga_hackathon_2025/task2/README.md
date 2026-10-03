@@ -5,3 +5,8 @@
 <p align="center">
     <img width=75% src="../../images/task2_block_diagram.jpg">  
 </p>  
+
+## Generating the Quartus Project  
+
+Run the following command in Windows PowerShell:  
+`cmd.exe /c 'create_project.bat'`  
