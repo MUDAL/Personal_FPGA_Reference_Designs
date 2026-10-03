@@ -22,7 +22,8 @@
 
 module task2 
 #( parameter int   DATA_LEN = 8,
-   parameter int   ADDR_LEN = 12 )
+   parameter int   ADDR_LEN = 12,
+   parameter int   FLAT_LAT = 3 )
  ( input    logic                i_clk,
    input    logic                i_rst,
    input    logic                i_valid,
@@ -33,8 +34,6 @@ module task2
    output   logic                o_valid,
    output   logic                o_last);
    
-   // Internal signals
-   //////////////////////////////////////////////////////////////////
    logic                traverse_done;
    logic [ADDR_LEN-1:0] row_max;
    logic [ADDR_LEN-1:0] col_max;
@@ -44,45 +43,44 @@ module task2
    logic                write_en;
    logic                read_en;
    logic [ADDR_LEN-1:0] read_addr;
-   //////////////////////////////////////////////////////////////////
    
-   // Instantiations
-   //////////////////////////////////////////////////////////////////
-   memory_controller memory_control_ip
-   (.i_clk           (i_clk),
-    .i_rst           (i_rst),
-    .i_valid         (i_valid),
-    .i_first         (i_first),
-    .i_last          (i_last),
-    .i_data          (i_data),
-    .i_traverse_done (traverse_done),
-    .o_row_max       (row_max),
-    .o_col_max       (col_max),   
-    .o_data          (i_mem_data), 
-    .o_write_addr    (write_addr),
-    .o_write_en      (write_en),
-    .o_read_en       (read_en));
+   memory_controller #(.DATA_LEN        (DATA_LEN),
+                       .ADDR_LEN        (ADDR_LEN)) memory_control_ip
+                      (.i_clk           (i_clk),
+                       .i_rst           (i_rst),
+                       .i_valid         (i_valid),
+                       .i_first         (i_first),
+                       .i_last          (i_last),
+                       .i_data          (i_data),
+                       .i_traverse_done (traverse_done),
+                       .o_row_max       (row_max),
+                       .o_col_max       (col_max),   
+                       .o_data          (i_mem_data), 
+                       .o_write_addr    (write_addr),
+                       .o_write_en      (write_en),
+                       .o_read_en       (read_en));
    
-   memory memory_ip
-   (.i_clk  (i_clk),
-    .i_we   (write_en),
-    .w_addr (write_addr),
-    .r_addr (read_addr),
-    .i_data (i_mem_data),
-    .o_data (o_mem_data));
+   memory #(.DATA_LEN (DATA_LEN),
+            .ADDR_LEN (ADDR_LEN)) memory_ip
+           (.i_clk    (i_clk),
+            .i_we     (write_en),
+            .w_addr   (write_addr),
+            .r_addr   (read_addr),
+            .i_data   (i_mem_data),
+            .o_data   (o_mem_data));
    
-   matrix_traverse marix_traverse_ip
-   (.i_clk       (i_clk),
-    .i_rst       (i_rst),
-    .i_row_max   (row_max),
-    .i_col_max   (col_max),
-    .i_enable    (read_en),
-    .i_data      (o_mem_data),
-    .o_read_addr (read_addr), 
-    .o_data      (o_data),   
-    .o_valid     (o_valid),
-    .o_last      (traverse_done));
-   
+   matrix_traverse #(.DATA_LEN    (DATA_LEN),
+                     .ADDR_LEN    (ADDR_LEN),
+                     .LATENCY     (FLAT_LAT)) marix_traverse_ip
+                    (.i_clk       (i_clk),
+                     .i_rst       (i_rst),
+                     .i_row_max   (row_max),
+                     .i_col_max   (col_max),
+                     .i_enable    (read_en),
+                     .i_data      (o_mem_data),
+                     .o_read_addr (read_addr), 
+                     .o_data      (o_data),   
+                     .o_valid     (o_valid),
+                     .o_last      (traverse_done));
    assign o_last = traverse_done;
-   //////////////////////////////////////////////////////////////////
 endmodule 

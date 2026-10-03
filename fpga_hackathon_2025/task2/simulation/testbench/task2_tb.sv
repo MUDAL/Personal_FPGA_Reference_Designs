@@ -97,28 +97,39 @@ module task2_tb();
            .o_valid  (o_valid),
            .o_last   (o_last));
 
-   // TO-DO: Add self-checking feature (comparing UUT output with golden model).
    initial begin: monitor
-      int fd_report;
+      int fd_output; int fd_report;
+      int passes; int fails;
+      int return_code;
+      logic [DATA_LEN-1:0] data_out;
 
       $timeformat(-9, 0, " ns");     
       wait(i_rst == 1'b1);
       wait(i_rst == 1'b0);
+      passes = 0; fails = 0;
 
+      fd_output = $fopen("../scripts/matrix_outputs.txt", "r");
       fd_report = $fopen("../scripts/task2_report.txt", "w"); 
+      if(fd_output == 0) $fatal(1, "Failed to open matrix_outputs.txt");
       if(fd_report == 0) $fatal(1, "Failed to open task2_report.txt");
 
       forever begin
          @(negedge i_clk);
-         $display("Time: %0t | o_data: %2d | o_valid: %2d | o_last: %2d",
-                  $time, o_data, o_valid, o_last);
-
-         $fdisplay(fd_report, "Time: %0t | o_data: %2d | o_valid: %2d | o_last: %2d",
-                   $time, o_data, o_valid, o_last);
-         
-         if(o_valid && o_last) begin 
-            $fclose(fd_report);
-            $finish;
+         if(o_valid) begin
+            return_code = $fscanf(fd_output, "%d", data_out);
+            if(o_data == data_out) passes = passes + 1;
+            else fails = fails + 1;
+            $display("TIME: %0t | EXPECTED: %2d | GOT: %2d", $time, data_out, o_data);
+            $fdisplay(fd_report, "TIME: %0t | EXPECTED: %2d | GOT: %2d", $time, data_out, o_data);
+            if(o_last) begin
+               $display("TIME: %0t | PASSES: %4d | FAILS: %2d | TOTAL: %2d", 
+                        $time, passes, fails, passes + fails);
+               $fdisplay(fd_report, "TIME: %0t | PASSES: %4d | FAILS: %2d | TOTAL: %2d", 
+                         $time, passes, fails, passes + fails);
+               $fclose(fd_output); 
+               $fclose(fd_report);
+               $finish;
+            end
          end
       end
    end

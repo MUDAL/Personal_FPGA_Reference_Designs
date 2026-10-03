@@ -1,71 +1,33 @@
-Time: 100 ns | o_data:  X | o_valid:  0 | o_last:  0
-Time: 110 ns | o_data:  X | o_valid:  0 | o_last:  0
-Time: 120 ns | o_data:  X | o_valid:  0 | o_last:  0
-Time: 130 ns | o_data:  X | o_valid:  0 | o_last:  0
-Time: 140 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 150 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 160 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 170 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 180 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 190 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 200 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 210 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 220 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 230 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 240 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 250 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 260 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 270 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 280 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 290 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 300 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 310 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 320 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 330 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 340 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 350 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 360 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 370 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 380 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 390 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 400 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 410 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 420 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 430 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 440 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 450 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 460 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 470 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 480 ns | o_data:  0 | o_valid:  0 | o_last:  0
-Time: 490 ns | o_data:  0 | o_valid:  1 | o_last:  0
-Time: 500 ns | o_data:  1 | o_valid:  1 | o_last:  0
-Time: 510 ns | o_data:  8 | o_valid:  1 | o_last:  0
-Time: 520 ns | o_data: 16 | o_valid:  1 | o_last:  0
-Time: 530 ns | o_data:  9 | o_valid:  1 | o_last:  0
-Time: 540 ns | o_data:  2 | o_valid:  1 | o_last:  0
-Time: 550 ns | o_data:  3 | o_valid:  1 | o_last:  0
-Time: 560 ns | o_data: 10 | o_valid:  1 | o_last:  0
-Time: 570 ns | o_data: 17 | o_valid:  1 | o_last:  0
-Time: 580 ns | o_data: 24 | o_valid:  1 | o_last:  0
-Time: 590 ns | o_data: 25 | o_valid:  1 | o_last:  0
-Time: 600 ns | o_data: 18 | o_valid:  1 | o_last:  0
-Time: 610 ns | o_data: 11 | o_valid:  1 | o_last:  0
-Time: 620 ns | o_data:  4 | o_valid:  1 | o_last:  0
-Time: 630 ns | o_data:  5 | o_valid:  1 | o_last:  0
-Time: 640 ns | o_data: 12 | o_valid:  1 | o_last:  0
-Time: 650 ns | o_data: 19 | o_valid:  1 | o_last:  0
-Time: 660 ns | o_data: 26 | o_valid:  1 | o_last:  0
-Time: 670 ns | o_data: 27 | o_valid:  1 | o_last:  0
-Time: 680 ns | o_data: 20 | o_valid:  1 | o_last:  0
-Time: 690 ns | o_data: 13 | o_valid:  1 | o_last:  0
-Time: 700 ns | o_data:  6 | o_valid:  1 | o_last:  0
-Time: 710 ns | o_data:  7 | o_valid:  1 | o_last:  0
-Time: 720 ns | o_data: 14 | o_valid:  1 | o_last:  0
-Time: 730 ns | o_data: 21 | o_valid:  1 | o_last:  0
-Time: 740 ns | o_data: 28 | o_valid:  1 | o_last:  0
-Time: 750 ns | o_data: 29 | o_valid:  1 | o_last:  0
-Time: 760 ns | o_data: 22 | o_valid:  1 | o_last:  0
-Time: 770 ns | o_data: 15 | o_valid:  1 | o_last:  0
-Time: 780 ns | o_data: 23 | o_valid:  1 | o_last:  0
-Time: 790 ns | o_data: 30 | o_valid:  1 | o_last:  0
-Time: 800 ns | o_data: 31 | o_valid:  1 | o_last:  1
+TIME: 490 ns | EXPECTED:  0 | GOT:  0
+TIME: 500 ns | EXPECTED:  1 | GOT:  1
+TIME: 510 ns | EXPECTED:  8 | GOT:  8
+TIME: 520 ns | EXPECTED: 16 | GOT: 16
+TIME: 530 ns | EXPECTED:  9 | GOT:  9
+TIME: 540 ns | EXPECTED:  2 | GOT:  2
+TIME: 550 ns | EXPECTED:  3 | GOT:  3
+TIME: 560 ns | EXPECTED: 10 | GOT: 10
+TIME: 570 ns | EXPECTED: 17 | GOT: 17
+TIME: 580 ns | EXPECTED: 24 | GOT: 24
+TIME: 590 ns | EXPECTED: 25 | GOT: 25
+TIME: 600 ns | EXPECTED: 18 | GOT: 18
+TIME: 610 ns | EXPECTED: 11 | GOT: 11
+TIME: 620 ns | EXPECTED:  4 | GOT:  4
+TIME: 630 ns | EXPECTED:  5 | GOT:  5
+TIME: 640 ns | EXPECTED: 12 | GOT: 12
+TIME: 650 ns | EXPECTED: 19 | GOT: 19
+TIME: 660 ns | EXPECTED: 26 | GOT: 26
+TIME: 670 ns | EXPECTED: 27 | GOT: 27
+TIME: 680 ns | EXPECTED: 20 | GOT: 20
+TIME: 690 ns | EXPECTED: 13 | GOT: 13
+TIME: 700 ns | EXPECTED:  6 | GOT:  6
+TIME: 710 ns | EXPECTED:  7 | GOT:  7
+TIME: 720 ns | EXPECTED: 14 | GOT: 14
+TIME: 730 ns | EXPECTED: 21 | GOT: 21
+TIME: 740 ns | EXPECTED: 28 | GOT: 28
+TIME: 750 ns | EXPECTED: 29 | GOT: 29
+TIME: 760 ns | EXPECTED: 22 | GOT: 22
+TIME: 770 ns | EXPECTED: 15 | GOT: 15
+TIME: 780 ns | EXPECTED: 23 | GOT: 23
+TIME: 790 ns | EXPECTED: 30 | GOT: 30
+TIME: 800 ns | EXPECTED: 31 | GOT: 31
+TIME: 800 ns | PASSES:   32 | FAILS:  0 | TOTAL: 32

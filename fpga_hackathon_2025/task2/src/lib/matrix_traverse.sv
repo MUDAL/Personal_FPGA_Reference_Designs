@@ -63,14 +63,15 @@ module matrix_traverse
    logic                o_valid_flatten;
    logic [ADDR_LEN-1:0] o_mem_addr;
 
-   flatten flatten_ip(.i_clk      (i_clk),
-                      .i_rst      (i_rst),
-                      .i_valid    (i_valid_flatten),
-                      .i_col_max  (i_col_max),   
-                      .i_row      (o_reg.row),
-                      .i_col      (o_reg.col),
-                      .o_mem_addr (o_mem_addr),
-                      .o_valid    (o_valid_flatten)); 
+   flatten #(.ADDR_LEN   (ADDR_LEN)) flatten_ip
+            (.i_clk      (i_clk),
+             .i_rst      (i_rst),
+             .i_valid    (i_valid_flatten),
+             .i_col_max  (i_col_max),   
+             .i_row      (o_reg.row),
+             .i_col      (o_reg.col),
+             .o_mem_addr (o_mem_addr),
+             .o_valid    (o_valid_flatten)); 
    
    assign i_valid_flatten = (state_reg != IDLE);
    assign last_element    =  o_reg.row == i_row_max - 1 && o_reg.col == i_col_max - 1;
