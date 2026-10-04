@@ -6,5 +6,7 @@
     <img width=60% src="../../images/task1_maximum_finder.jpg">  
 </p>  
 
---- 
+## Generating the Quartus Project  
 
+Run the following command in Windows PowerShell:  
+`cmd.exe /c 'create_project.bat'`  
