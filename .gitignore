@@ -1,6 +1,9 @@
 # Disposable build directories
 **/build/
 
+# Script-generated text files
+*.txt
+
 # Backup files
 *.bak
 
