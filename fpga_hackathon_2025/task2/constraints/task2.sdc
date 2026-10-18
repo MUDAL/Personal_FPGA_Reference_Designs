@@ -1,5 +1,3 @@
-## Generated SDC file "C:/Users/olaol/Desktop/Personal_FPGA_Reference_Designs/fpga_hackathon_2025/task2/constraints/task2.sdc"
-
 ## Copyright (C) 2018  Intel Corporation. All rights reserved.
 ## Your use of Intel Corporation's design tools, logic functions 
 ## and other software and tools, and its AMPP partner logic 
